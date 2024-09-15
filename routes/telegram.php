@@ -1,6 +1,8 @@
 <?php
 /** @var SergiX44\Nutgram\Nutgram $bot */
 
+use App\Models\Spin;
+use App\Models\Token;
 use App\Models\User as TelegramUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -38,7 +40,15 @@ $bot->onCommand('start', function (Nutgram $bot) {
     // ورود کاربر (login) برای تولید توکن JWT
     $token = Auth::login($telegramUser);
 
-    // ذخیره توکن در کش با زمان انقضا 10 دقیقه
+    $tokenReceived = rand(100, 1000);
+    Spin::create([
+        'user_id' => $telegramUser->id,
+        'token_received' => $tokenReceived,
+    ]);
+    $tokenModel = Token::firstOrCreate(['user_id' => $telegramUser->id]);
+    $tokenModel->increment('amount', $tokenReceived);
+
+
     Cache::put('jwt_token_' . $telegramUser->id, $token, 100000);
 
     // ایجاد URL برای وب اپلیکیشن با استفاده از آی‌دی کاربر

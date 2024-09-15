@@ -36,7 +36,7 @@ Route::get('/tokens', function (Request $request) {
 
 Route::post('/spin', function (Request $request) {
     $userId = auth()->user()->id;
-    $tokenReceived = $request->input('token_received'); // مقدار توکنی که کاربر دریافت کرده
+    $tokenReceived = $request->input('token_received');
 
     // پیدا کردن کاربر
     $user = TelegramUsers::find($userId);
