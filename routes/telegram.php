@@ -52,7 +52,7 @@ $bot->onCommand('start', function (Nutgram $bot) {
     Cache::put('jwt_token_' . $telegramUser->id, $token, 100000);
 
     // ایجاد URL برای وب اپلیکیشن با استفاده از آی‌دی کاربر
-    $webAppUrl = "https://3032-167-235-48-101.ngrok-free.app/loading?user_id{$telegramUser->id}&token={$token}";
+    $webAppUrl = "https://162.248.227.200/loading?user_id{$telegramUser->id}&token={$token}";
 
     // ایجاد دکمه WebApp و تنظیم آن
     $menuButton = new MenuButtonWebApp('Open', new WebAppInfo($webAppUrl));
