@@ -35,18 +35,19 @@ $bot->onCommand('start', function (Nutgram $bot) {
             'first_name' => $user->first_name,
             'invite_code' => $user->username
         ]);
+
+        $tokenReceived = rand(100, 1000);
+        Spin::create([
+            'user_id' => $telegramUser->id,
+            'token_received' => $tokenReceived,
+        ]);
+        $tokenModel = Token::firstOrCreate(['user_id' => $telegramUser->id]);
+        $tokenModel->increment('amount', $tokenReceived);
+
     }
 
     // ورود کاربر (login) برای تولید توکن JWT
     $token = Auth::login($telegramUser);
-
-    $tokenReceived = rand(100, 1000);
-    Spin::create([
-        'user_id' => $telegramUser->id,
-        'token_received' => $tokenReceived,
-    ]);
-    $tokenModel = Token::firstOrCreate(['user_id' => $telegramUser->id]);
-    $tokenModel->increment('amount', $tokenReceived);
 
 
     Cache::put('jwt_token_' . $telegramUser->id, $token, 100000);
