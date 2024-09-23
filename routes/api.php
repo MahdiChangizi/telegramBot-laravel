@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-//Route::get('/user', function (Request $request) {
-//    return $request->user();
-//})->middleware('auth:sanctum');
 
 Route::get('/last_spin', function () {
     $spin = Spin::where('user_id', auth()->user()->id)->latest('created_at')->first();
@@ -19,7 +16,6 @@ Route::get('/last_spin', function () {
     $date = $spin->created_at->gt(Carbon::now()->subHours(24));
     return response()->json(!$date);
 });
-
 
 Route::get('/tokens', function (Request $request) {
     $userId = auth()->user()->id;
@@ -61,7 +57,6 @@ Route::post('/spin', function (Request $request) {
         'total_tokens' => $token->amount,
     ]);
 });
-
 
 Route::get('/leaderboard', function () {
     // دریافت شناسه کاربر فعلی
@@ -120,3 +115,27 @@ Route::get('/invite-code', function () {
     ]);
 });
 
+
+Route::post('complete_task', function (Request $request) {
+    $user = auth()->user();
+    if ($user->point >= 6) return response()->json(['status' => 'failed', 'message' => 'Maximum level reached'], 400);
+    $taskRewards = [0 => 100, 1 => 100, 2 => 50, 3 => 50, 4 => 50, 5 => 50];
+    if (array_key_exists($request->task, $taskRewards) && $user->point == $request->task) {
+        $token = Token::firstOrCreate(['user_id' => $user->id]);
+        $token->increment('amount', $taskRewards[$request->task]);
+        $user->point += 1;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Task completed successfully',
+            'new_point' => $user->point,
+            'token_amount' => $token->amount
+        ]);
+    }
+    return response()->json(['status' => 'failed', 'message' => 'Invalid task or point mismatch'], 400);
+});
+
+Route::get('complete_task', function () {
+    $user = auth()->user();
+    return $user->point;
+});

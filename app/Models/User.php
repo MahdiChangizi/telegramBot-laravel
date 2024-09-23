@@ -12,7 +12,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['telegram_id', 'username', 'first_name', 'invite_code'];
+    protected $fillable = ['telegram_id', 'username', 'first_name', 'invite_code', 'point'];
 
     // رابطه یک به چند با توکن‌ها
     public function tokens(): \Illuminate\Database\Eloquent\Relations\HasMany
